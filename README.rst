@@ -22,6 +22,26 @@ Create transactions with the roles mod
 * Free software: MIT license
 * Documentation: https://transactionbuilder.readthedocs.io.
 
+Naming Conventions (work in progress)
+1. Commits
+Types of commit should be one of the following:
+
+build: Changes that affect the build system or external dependencies
+ci: Changes to our CI configuration files and scripts
+docs: Documentation only changes
+feat: A new feature
+fix: A bug fix
+perf: A code change that improves performance
+refactor: A code change that neither fixes a bug nor adds a feature
+style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+test: Adding missing tests or correcting existing tests
+More infos
+
+Conventional Commits Convention: https://www.conventionalcommits.org/en/v1.0.0/
+
+Angular Convention: https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines
+
+
 
 Features
 --------
