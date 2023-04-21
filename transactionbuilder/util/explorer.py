@@ -12,7 +12,6 @@ blockexplorers = {
     Chain.FANTOM.value: [Explorer.FTMSCAN.value, Apikey.API_KEY_FANTOM.value],
 }
 
-print(blockexplorers)
 
 
 @dataclass

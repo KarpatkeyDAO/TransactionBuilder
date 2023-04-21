@@ -30,6 +30,7 @@ private_key='xxxx'
 print('making tx 1')
 
 cf = ContractFunction(blockchain= 'gnosisChain', function_args=[curve_contract_address,100000000], function_name='approve', contract_address=usdt_contract_address, contract_abi=usdt_contract_abi)
+print(cf.data_input())
 cf2 = ContractFunction(blockchain= 'gnosisChain', function_args=[amounts,0], function_name='add_liquidity', contract_address=curve_contract_address, contract_abi=curve_contract_abi)
 roles_mod = RolesMod(blockchain='gnosisChain', role=2, private_key=private_key,contract_address=roles_mod_contract, contract_abi=roles_mod_abi)
 roles_mod_execute1 = roles_mod.roles_transaction(cf)
