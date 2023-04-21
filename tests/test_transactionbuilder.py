@@ -19,24 +19,36 @@ USDT_CONTRACT_ABI = address_and_abi['usdt_address_abi']
 USDT_FUNCTION_NAME = 'approve'
 USDT_FUNCTION_ARGS = [address_and_abi['curve_address'],100000000]
 
-ROLES_MOD_ADDRESS = address_and_abi['roles_mod_address']
-ROLES_MOD_ABI = address_and_abi['roles_mod_abi']
-PRIVATE_KEY = 'xxxx'
-
 cf = ContractFunction(blockchain= 'gnosisChain', function_args=USDT_FUNCTION_ARGS, function_name=USDT_FUNCTION_NAME, contract_address=USDT_CONTRACT_ADDRESS, contract_abi=USDT_CONTRACT_ABI)
 
-def test_roles_transaction(blockchain,role,private_key,roles_contract_address,roles_contract_abi):
+@pytest.fixture
+def roles_mod(blockchain,role,private_key,roles_contract_address,roles_contract_abi):
+    yield RolesMod(
+        blockchain=blockchain,
+        role=role,
+        private_key=private_key,
+        contract_address=roles_contract_address,
+        contract_abi=roles_contract_abi
+    )
 
-    roles_mod = RolesMod(blockchain,role,private_key,roles_contract_address,roles_contract_abi).roles_transaction(cf)
+def test_roles_transaction(roles_mod):
 
-    assert cf.data_input() == 'hex of length ...'
-    assert roles_mod.gas_limit == 'between 0 and 500000'
-    assert roles_mod.base_fee == 'above 0'
-    assert roles_mod == 'txhash'
+    tx_hash = roles_mod.roles_transaction(cf)
 
-def test_get_tx_receipt():
+    assert cf.data_input() == '0x095ea7b30000000000000000000000007f90122bf0700f9e7e1f688fe926940e8839f3530000000000000000000000000000000000000000000000000000000005f5e100'
+    assert 0 <= tx_hash.gas_limit <= 500000, "gas_limit must be between 0 and 500000"
+    assert tx_hash.base_fee > 0, "Base-fee must be above 0"
 
+    assert isinstance(tx_hash, str), "Transaction hash must be a string."
+    assert len(tx_hash) == 66, "Transaction hash must be 66 characters long."
+    assert tx_hash.startswith("0x"), "Transaction hash must start with '0x'."
+    assert all(c in "0123456789abcdefABCDEF" for c in tx_hash[2:]), "Transaction hash must only include numbers 0-9 and letters a-f."
 
+def test_get_tx_receipt(roles_mod, tx_hash):
+    
+    tx_receipt = roles_mod.get_tx_receipt(tx_hash)
+    assert isinstance(tx_receipt, dict), "tx_receipt must be a dict"
+    assert tx_receipt["status"] == 1, "tx_receipt must have status of 1 (successful)"
 
 # @pytest.fixture
 # def response():
