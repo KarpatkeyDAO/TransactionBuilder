@@ -61,6 +61,20 @@ class RolesMod:
                 return int(x['gas_limit']) + 100000
         return 500000
 
+    def check_roles_transaction(self, cf: ContractFunction):
+        """make static call to validate transaction
+
+        Args:
+            cf (ContractFunction): The contract function to execute
+        """
+        try:
+            roles_transaction = self.contract_instance.functions.execTransactionWithRole(
+            cf.contract_address, self.value, cf.data_input(), self.operation, self.role, self.should_revert
+            ).call({'from': self.account.address})
+            return True
+        except exceptions.ContractLogicError:
+            return False
+
     def roles_transaction(self, cf: ContractFunction, max_prio: int = None, max_gas: int = None, gas_limit: int = None) -> str:
         """Execute a role-based transaction.
 
@@ -81,6 +95,9 @@ class RolesMod:
 
         if not gas_limit:
             gas_limit = self.get_gas_limit(cf.data_input()[:10])
+        
+        if not self.check_roles_transaction(cf):
+            print('transaction will be reverted')
 
         tx = self.contract_instance.functions.execTransactionWithRole(
             cf.contract_address, self.value, cf.data_input(), self.operation, self.role, self.should_revert
