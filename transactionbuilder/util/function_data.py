@@ -7,7 +7,7 @@ from web3 import Web3
 from web3._utils.abi import get_abi_input_types, filter_by_name
 from eth_abi import encode_abi
 
-from util.api import RequestFromScan
+from util.functions import get_node
 
 
 @dataclass
@@ -16,23 +16,14 @@ class ContractFunction:
     function_args: list
     function_name: str
     contract_address: str
-    contract_abi: Optional[list] = None
-    web3: Optional[Web3] = Web3(Web3.HTTPProvider("https://rpc.gnosischain.com/"))
+    contract_abi: str
+    web3: Optional[Web3] = None
     contract_instance: Optional[Web3] = None
     function_instance: Optional[Web3] = None
 
     def __post_init__(self):
-        if self.contract_abi is None:
-            self.contract_abi = (
-                RequestFromScan(
-                    blockchain=self.blockchain,
-                    module="contract",
-                    action="getabi",
-                    kwargs={"address": self.contract_abi},
-                )
-                .request()
-                ["result"]
-            )
+        if not self.web3:
+            self.web3 = get_node(self.blockchain)
         self.contract_address = self.web3.to_checksum_address(self.contract_address)
         self.contract_instance = self.web3.eth.contract(
             address=self.contract_address, abi=self.contract_abi
