@@ -7,6 +7,7 @@ from web3 import Web3, exceptions
 from eth_account import Account
 
 from util.function_data import ContractFunction
+from util.functions import get_node
 
 
 @dataclass
@@ -25,7 +26,8 @@ class RolesMod:
     nonce: Optional[int] = None
 
     def __post_init__(self):
-        self.web3 = Web3(Web3.HTTPProvider("https://rpc.gnosischain.com/"))
+        if not self.web3:
+            self.web3 = get_node(self.blockchain)
         self.account = Account.from_key(self.private_key)
         self.contract_instance = self.web3.eth.contract(
             address=self.contract_address, abi=self.contract_abi
