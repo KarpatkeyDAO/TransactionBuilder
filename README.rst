@@ -26,15 +26,15 @@ Naming Conventions (work in progress)
 1. Commits
 Types of commit should be one of the following:
 
-build: Changes that affect the build system or external dependencies 
-ci: Changes to our CI configuration files and scripts 
-docs: Documentation only changes 
-feat: A new feature  
-fix: A bug fix 
-perf: A code change that improves performance 
-refactor: A code change that neither fixes a bug nor adds a feature 
-style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc) . 
-test: Adding missing tests or correcting existing tests 
+build: Changes that affect the build system or external dependencies <br />
+ci: Changes to our CI configuration files and scripts <br />
+docs: Documentation only changes <br />
+feat: A new feature <br /> 
+fix: A bug fix <br />
+perf: A code change that improves performance <br />
+refactor: A code change that neither fixes a bug nor adds a feature <br />
+style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc) . <br />
+test: Adding missing tests or correcting existing tests <br />
 More infos
 
 Conventional Commits Convention: https://www.conventionalcommits.org/en/v1.0.0/
