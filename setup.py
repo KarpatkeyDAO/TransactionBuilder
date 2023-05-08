@@ -31,15 +31,15 @@ setup(
     description="Create transactions with the roles mod",
     entry_points={
         'console_scripts': [
-            'transactionbuilder=transactionbuilder.cli:main',
+            'transaction_builder=transaction_builder.cli:main',
         ],
     },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='transactionbuilder',
-    name='transactionbuilder',
+    keywords='transaction_builder',
+    name='transaction_builder',
     packages=find_packages(include=['transaction_builder', 'transaction_builder.*']),
     test_suite='tests',
     tests_require=test_requirements,

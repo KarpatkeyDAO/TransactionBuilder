@@ -19,7 +19,7 @@ class RolesMod:
     contract_address: str
     private_key: Optional[str] = None
     account: Optional[str] = None
-    contract_abi: Optional[str] = None 
+    contract_abi: Optional[str] = '[{"type":"function","stateMutability":"nonpayable","outputs":[{"type":"bool","name":"success","internalType":"bool"}],"name":"execTransactionWithRole","inputs":[{"type":"address","name":"to","internalType":"address"},{"type":"uint256","name":"value","internalType":"uint256"},{"type":"bytes","name":"data","internalType":"bytes"},{"type":"uint8","name":"operation","internalType":"enum Enum.Operation"},{"type":"uint16","name":"role","internalType":"uint16"},{"type":"bool","name":"shouldRevert","internalType":"bool"}]}]'
     operation: Optional[int] = 0
     value: Optional[int] = 0
     should_revert: Optional[bool] = False
@@ -29,8 +29,7 @@ class RolesMod:
     def __post_init__(self):
         if not self.private_key and not self.account:
             raise ValueError("Either 'private_key' or 'account' must be filled.")
-        if not self.web3:
-            self.web3 = get_node(self.blockchain)
+        self.web3 = get_node(self.blockchain)
         if self.private_key:
             self.account = Account.from_key(self.private_key)
         self.contract_instance = self.web3.eth.contract(
