@@ -6,8 +6,8 @@ from decimal import *
 from web3 import Web3
 from web3.middleware import construct_simple_cache_middleware
 
-from util.enums import Chain
-from util.constants import NODE_ETH,NODE_POL,NODE_XDAI,NODE_FANTOM,NODE_OPTIMISM,NODE_BINANCE,NODE_AVALANCHE
+from .enums import Chain
+from .constants import NODE_ETH,NODE_POL,NODE_XDAI,NODE_FANTOM,NODE_OPTIMISM,NODE_BINANCE,NODE_AVALANCHE
 
 logger = logging.getLogger(__name__)
 
