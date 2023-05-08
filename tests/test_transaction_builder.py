@@ -7,7 +7,6 @@ import pytest
 #from click.testing import CliRunner
 
 from transaction_builder import main
-import cli
 from transaction_builder.util.enums import Chain
 
 BLOCKCHAIN = Chain.GNOSIS.value
