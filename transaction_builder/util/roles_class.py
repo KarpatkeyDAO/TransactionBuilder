@@ -6,8 +6,8 @@ import json
 from web3 import Web3, exceptions
 from eth_account import Account
 
-from util.function_data import ContractFunction
-from util.functions import get_node
+from .function_data import ContractFunction
+from .functions import get_node
 
 
 @dataclass
