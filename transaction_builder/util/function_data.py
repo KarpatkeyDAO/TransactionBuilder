@@ -7,7 +7,7 @@ from web3 import Web3
 from web3._utils.abi import get_abi_input_types, filter_by_name
 from eth_abi import encode_abi
 
-from util.functions import get_node
+from .functions import get_node
 
 
 @dataclass
