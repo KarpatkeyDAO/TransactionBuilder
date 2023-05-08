@@ -5,10 +5,22 @@ from transaction_builder.util.enums import Chain
 from transaction_builder.util.function_data import ContractFunction
 from transaction_builder.util.roles_class import RolesMod
 
+blockchain = Chain.GNOSIS.value
+function_args = ['0x7f90122BF0700F9E7e1F688fe926940E8839F353',100000000]
+function_name = 'approve'
+contract_address = '0x4ECaBa5870353805a9F068101A40E0f32ed605C6'
+contract_abi = '[{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},\
+                {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+
+role = 2
+account = '0x7e19DE37A31E40eec58977CEA36ef7fB70e2c5CD'
+roles_mod_address = '0xB6CeDb9603e7992A5d42ea2246B3ba0a21342503'
+
 def test_it(blockchain: str,function_args: list,function_name:list,contract_address:str,contract_abi:str,role:int,account:str,roles_mod_address:str) -> dict:
     cf = ContractFunction(blockchain, function_args, function_name, contract_address, contract_abi)
     roles_mod = RolesMod(blockchain, role, contract_address=roles_mod_address,account=account)
-    roles_mod.check_roles_transaction(cf)   
+    check_transaction = roles_mod.check_roles_transaction(cf)
+    return check_transaction
 
 
 # def send_it(blockchain: str,function_args: list,function_name:list,contract_address:str,contract_abi:str,role:int,private_key:str,roles_mod_address:str) -> dict:
@@ -20,18 +32,23 @@ def test_it(blockchain: str,function_args: list,function_name:list,contract_addr
 #     roles_mod_tx1 = roles_mod.get_tx_receipt(roles_mod_execute)
 #     print(roles_mod_tx1.status)
 
-def main():
-    pass
-    # blockchain = Chain.ETHEREUM.value
-    # function_args = [13591818202360617192285,False]
-    # function_name = ['withdrawAndUnwrap']
-    # contract_address = '0xe4683Fe8F53da14cA5DAc4251EaDFb3aa614d528'
-    # contract_abi = ''
-    # role = 2
-    # private_key = ''
-    # roles_mod_address = ''
+test_tx = test_it(blockchain,function_args,function_name,contract_address,contract_abi,role,account,roles_mod_address)
+print(test_tx)
 
-    #send_it(blockchain,function_args,function_name,contract_address,contract_abi,role,private_key,roles_mod_address)
+# def main():
+#     pass
+#     blockchain = Chain.GNOSIS.value
+#     function_args = ['0x7f90122BF0700F9E7e1F688fe926940E8839F353',100000000]
+#     function_name = 'approve'
+#     contract_address = '0x4ECaBa5870353805a9F068101A40E0f32ed605C6'
+#     contract_abi = '[{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},\
+#                 {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
 
-if __name__ == "__main__":
-    main()
+#     role = 2
+#     account = '0x7e19DE37A31E40eec58977CEA36ef7fB70e2c5CD'
+#     roles_mod_address = '0xB6CeDb9603e7992A5d42ea2246B3ba0a21342503'
+
+#     test_it(blockchain,function_args,function_name,contract_address,contract_abi,role,account,roles_mod_address)
+
+# if __name__ == "__main__":
+#     main()

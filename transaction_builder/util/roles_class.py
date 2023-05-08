@@ -19,7 +19,9 @@ class RolesMod:
     contract_address: str
     private_key: Optional[str] = None
     account: Optional[str] = None
-    contract_abi: Optional[str] = '[{"type":"function","stateMutability":"nonpayable","outputs":[{"type":"bool","name":"success","internalType":"bool"}],"name":"execTransactionWithRole","inputs":[{"type":"address","name":"to","internalType":"address"},{"type":"uint256","name":"value","internalType":"uint256"},{"type":"bytes","name":"data","internalType":"bytes"},{"type":"uint8","name":"operation","internalType":"enum Enum.Operation"},{"type":"uint16","name":"role","internalType":"uint16"},{"type":"bool","name":"shouldRevert","internalType":"bool"}]}]'
+    contract_abi: Optional[
+        str
+    ] = '[{"type":"function","stateMutability":"nonpayable","outputs":[{"type":"bool","name":"success","internalType":"bool"}],"name":"execTransactionWithRole","inputs":[{"type":"address","name":"to","internalType":"address"},{"type":"uint256","name":"value","internalType":"uint256"},{"type":"bytes","name":"data","internalType":"bytes"},{"type":"uint8","name":"operation","internalType":"enum Enum.Operation"},{"type":"uint16","name":"role","internalType":"uint16"},{"type":"bool","name":"shouldRevert","internalType":"bool"}]}]'
     operation: Optional[int] = 0
     value: Optional[int] = 0
     should_revert: Optional[bool] = False
@@ -32,6 +34,7 @@ class RolesMod:
         self.web3 = get_node(self.blockchain)
         if self.private_key:
             self.account = Account.from_key(self.private_key)
+            self.account = self.account.address
         self.contract_instance = self.web3.eth.contract(
             address=self.contract_address, abi=self.contract_abi
         )
@@ -42,9 +45,9 @@ class RolesMod:
         Returns:
             int: The base fee.
         """
-        latest_block = self.web3.eth.get_block('latest')
-        gas_used = latest_block['gasUsed']
-        base_fee_per_gas = latest_block['baseFeePerGas']
+        latest_block = self.web3.eth.get_block("latest")
+        gas_used = latest_block["gasUsed"]
+        base_fee_per_gas = latest_block["baseFeePerGas"]
         base_fee = gas_used * base_fee_per_gas
         return base_fee * 2
 
@@ -57,13 +60,13 @@ class RolesMod:
         Returns:
             int: The gas limit.
         """
-        db_file_path = Path(__file__).resolve().parent.parent / 'db' / 'gaslimit.json'
+        db_file_path = Path(__file__).resolve().parent.parent / "db" / "gaslimit.json"
         with open(db_file_path) as db_file:
             gas_limit_db = json.load(db_file)
 
         for x in gas_limit_db:
-            if x['function'] == function_hex and x['blockchain'] == self.blockchain:
-                return int(x['gas_limit']) + 100000
+            if x["function"] == function_hex and x["blockchain"] == self.blockchain:
+                return int(x["gas_limit"]) + 100000
         return 500000
 
     def check_roles_transaction(self, cf: ContractFunction):
@@ -74,13 +77,24 @@ class RolesMod:
         """
         try:
             self.contract_instance.functions.execTransactionWithRole(
-            cf.contract_address, self.value, cf.data_input(), self.operation, self.role, self.should_revert
-            ).call({'from': self.account.address})
+                cf.contract_address,
+                self.value,
+                cf.data_input(),
+                self.operation,
+                self.role,
+                self.should_revert,
+            ).call({"from": self.account})
             return True
         except exceptions.ContractLogicError:
             return False
 
-    def roles_transaction(self, cf: ContractFunction, max_prio: int = None, max_gas: int = None, gas_limit: int = None) -> str:
+    def roles_transaction(
+        self,
+        cf: ContractFunction,
+        max_prio: int = None,
+        max_gas: int = None,
+        gas_limit: int = None,
+    ) -> str:
         """Execute a role-based transaction.
 
         Args:
@@ -100,19 +114,27 @@ class RolesMod:
 
         if not gas_limit:
             gas_limit = self.get_gas_limit(cf.data_input()[:10])
-        
+
         if not self.check_roles_transaction(cf):
-            print('transaction will be reverted')
+            print("transaction will be reverted")
 
         tx = self.contract_instance.functions.execTransactionWithRole(
-            cf.contract_address, self.value, cf.data_input(), self.operation, self.role, self.should_revert
-        ).build_transaction({
-            'chainId': self.chain_id or self.web3.eth.chain_id,
-            'gas': gas_limit,
-            'maxFeePerGas': max_gas,
-            'maxPriorityFeePerGas': max_prio,
-            'nonce': self.nonce or self.web3.eth.getTransactionCount(self.account.address),
-        })
+            cf.contract_address,
+            self.value,
+            cf.data_input(),
+            self.operation,
+            self.role,
+            self.should_revert,
+        ).build_transaction(
+            {
+                "chainId": self.chain_id or self.web3.eth.chain_id,
+                "gas": gas_limit,
+                "maxFeePerGas": max_gas,
+                "maxPriorityFeePerGas": max_prio,
+                "nonce": self.nonce
+                or self.web3.eth.getTransactionCount(self.account.address),
+            }
+        )
 
         signed_txn = self.web3.eth.account.sign_transaction(tx, self.private_key)
         executed_txn = self.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
@@ -122,6 +144,6 @@ class RolesMod:
     def get_tx_receipt(self, tx_hash: str):
         try:
             transaction_receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash)
-            return  transaction_receipt
+            return transaction_receipt
         except exceptions.TransactionNotFound:
-            return 'Transaction not yet on blockchain'
+            return "Transaction not yet on blockchain"
