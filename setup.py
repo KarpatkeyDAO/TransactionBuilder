@@ -40,7 +40,7 @@ setup(
     include_package_data=True,
     keywords='transactionbuilder',
     name='transactionbuilder',
-    packages=find_packages(include=['transactionbuilder', 'transactionbuilder.*']),
+    packages=find_packages(include=['transaction_builder', 'transaction_builder.*']),
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/richymaestro/transactionbuilder',
