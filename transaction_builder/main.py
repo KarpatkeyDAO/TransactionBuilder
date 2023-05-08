@@ -1,9 +1,9 @@
 """Main module."""
 import os
 
-from util.enums import Chain
-from util.function_data import ContractFunction
-from util.roles_class import RolesMod
+from transaction_builder.util.enums import Chain
+from transaction_builder.util.function_data import ContractFunction
+from transaction_builder.util.roles_class import RolesMod
 
 def test_it(blockchain: str,function_args: list,function_name:list,contract_address:str,contract_abi:str,role:int,account:str,roles_mod_address:str) -> dict:
     cf = ContractFunction(blockchain, function_args, function_name, contract_address, contract_abi)
