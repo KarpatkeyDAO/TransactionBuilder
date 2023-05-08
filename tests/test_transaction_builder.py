@@ -6,9 +6,9 @@ import pytest
 
 #from click.testing import CliRunner
 
-import transaction_builder
+from transaction_builder import main
 import cli
-from util.enums import Chain
+from transaction_builder.util.enums import Chain
 
 BLOCKCHAIN = Chain.GNOSIS.value
 FUNCTION_ARGS = ['0x7f90122BF0700F9E7e1F688fe926940E8839F353',100000000]
@@ -21,7 +21,7 @@ ROLES_MOD_ADDRESS = '0xB6CeDb9603e7992A5d42ea2246B3ba0a21342503'
 ACCOUNT = '0x7e19DE37A31E40eec58977CEA36ef7fB70e2c5CD'
 
 def test_test_it():
-    data = transaction_builder.test_it(BLOCKCHAIN,FUNCTION_ARGS,FUNCTION_NAME,CONTRACT_ADDRESS,CONTRACT_ADDRESS,ROLE,ACCOUNT,ROLES_MOD_ADDRESS)
+    data = main.test_it(BLOCKCHAIN,FUNCTION_ARGS,FUNCTION_NAME,CONTRACT_ADDRESS,CONTRACT_ADDRESS,ROLE,ACCOUNT,ROLES_MOD_ADDRESS)
     assert data == True
 
 # @pytest.fixture
