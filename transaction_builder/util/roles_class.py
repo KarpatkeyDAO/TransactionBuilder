@@ -83,7 +83,7 @@ class RolesMod:
             cf (ContractFunction): The contract function to execute
         """
         try:
-            self.contract_instance.functions.execTransactionWithRole(
+            roles_transaction = self.contract_instance.functions.execTransactionWithRole(
                 contract_address,
                 self.value,
                 data,
@@ -140,7 +140,7 @@ class RolesMod:
                 "maxFeePerGas": max_gas,
                 "maxPriorityFeePerGas": max_prio,
                 "nonce": self.nonce
-                or self.web3.eth.getTransactionCount(self.account.address),
+                or self.web3.eth.getTransactionCount(self.account),
             }
         )
 
