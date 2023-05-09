@@ -18,17 +18,37 @@ multisends = {
 
 
 def make_onesend(tx: Dict) -> ContractFunction:
+    """returns a ContractFunction class from transaction dict
+
+    Args:
+        tx (Dict): Dictionary of transactions
+
+    Returns:
+        ContractFunction: returns cf object
+    """
     cf = ContractFunction(
         tx["blockchain"],
         tx["function_args"],
         tx["function_name"],
         tx["contract_address"],
-        tx["contract_abi"]
+        tx["contract_abi"],
+        tx['operation'],
+        tx['value']
     )
     return cf
 
 
 def make_multisend(txs: List[Dict], blockchain: str, multisend: str) -> str:
+    """create the data for a multisend tx
+
+    Args:
+        txs (List[Dict]): list of transaction dictionaries
+        blockchain (str): name of the blockchain to execute
+        multisend (str): address of the multisend contract
+
+    Returns:
+        str: hexstring of the data
+    """
     web3 = get_node(blockchain).manager.provider.__dict__['endpoint_uri']
     txs = [make_onesend(tx) for tx in txs]
     transactions = [
@@ -47,6 +67,14 @@ def make_multisend(txs: List[Dict], blockchain: str, multisend: str) -> str:
 
 
 def multi_or_one(txs: List[Dict]) -> Tuple[int, str, str, str]:
+    """Checks if tx list needs multisend or not
+
+    Args:
+        txs (List[Dict]): list with transactions dictionaries
+
+    Returns:
+        Tuple[int, str, str, str]: necessary variables for making transaction
+    """
     blockchain = txs[0]["blockchain"]
     if len(txs) > 1:
         contract_address = multisends.get(blockchain, MULTISEND_CALL_ONLY)
@@ -70,7 +98,18 @@ def test_it(
     role: int,
     account: str,
     roles_mod_address: str
-) -> Dict:
+    ) -> bool:
+    """Test the transaction with static call
+
+    Args:
+        txs (List[Dict]): list of transaction dictionaries
+        role (int): role that wants to execute
+        account (str): account that wants to execute
+        roles_mod_address (str): address to call execTransactionWithRole
+
+    Returns:
+        bool: True or False
+    """
     operation, contract_address, data, blockchain = multi_or_one(txs)
     roles_mod = RolesMod(
         blockchain,
@@ -88,16 +127,28 @@ def send_it(
     role: int,
     private_key: str,
     roles_mod_address: str
-) -> Dict:
+) -> int:
+    """send transaction to the blockchain
+
+    Args:
+        txs (List[Dict]): list of transactions dictionaries
+        role (int): role that wants to execute
+        private_key (str): to access the EOA
+        roles_mod_address (str): address to call execTransactionWithRole
+
+    Returns:
+        int: 0 (fail) or 1 (success)
+    """
     operation, contract_address, data, blockchain = multi_or_one(txs)
     roles_mod = RolesMod(
         blockchain,
         role,
-        private_key,
         roles_mod_address,
+        private_key,
         operation=operation
     )
     roles_mod_execute = roles_mod.roles_transaction(contract_address, data)
     print('building receipt....')
     roles_mod_tx1 = roles_mod.get_tx_receipt(roles_mod_execute)
-    print(roles_mod_tx1.status)
+    print(roles_mod_tx1)
+    return roles_mod_tx1.status
