@@ -17,6 +17,8 @@ class ContractFunction:
     function_name: str
     contract_address: str
     contract_abi: str
+    operation: Optional[int] = 0
+    value: Optional[int] = 0
     web3: Optional[Web3] = None
     contract_instance: Optional[Web3] = None
     function_instance: Optional[Web3] = None
