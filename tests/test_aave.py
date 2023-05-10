@@ -1,3 +1,4 @@
+import pytest
 from transaction_builder.util.enums import Chain
 from transaction_builder.util.roles_class import RolesMod
 
@@ -24,7 +25,7 @@ def test_approve_method():
     decoded = decode_data_input(method.arg_types, method.as_data_input())
     assert decoded == (ETHAddr.stkAAVE, amount)
 
-
+@pytest.mark.xfail(reason="Mainnet role contract not properly configured")
 def test_approve_method_with_roles():
     method = ApproveForStkAAVE(amount=1000)
     ROLE = 2
