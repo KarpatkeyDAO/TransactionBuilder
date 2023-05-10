@@ -16,18 +16,17 @@ from transaction_builder.util.roles_class import RolesMod
 # account = '0x7e19DE37A31E40eec58977CEA36ef7fB70e2c5CD'
 # roles_mod_address = '0xB6CeDb9603e7992A5d42ea2246B3ba0a21342503'
 
-def test_it(blockchain: str,function_args: list,function_name:list,contract_address:str,contract_abi:str,role:int,account:str,roles_mod_address:str) -> dict:
+def test_it(blockchain: str,function_args: list,function_name:str,contract_address:str,contract_abi:str,role:int,account:str,roles_mod_address:str) -> dict:
     cf = ContractFunction(blockchain, function_args, function_name, contract_address, contract_abi)
-    roles_mod = RolesMod(blockchain, role, contract_address=roles_mod_address,account=account)
-    check_transaction = roles_mod.check_roles_transaction(cf)
+    roles_mod = RolesMod(blockchain, role, contract_address=roles_mod_address, account=account)
+    check_transaction = roles_mod.check_roles_transaction(cf.contract_address, cf.data_input())
     return check_transaction
 
 
-def send_it(blockchain: str,function_args: list,function_name:list,contract_address:str,contract_abi:str,role:int,private_key:str,roles_mod_address:str) -> dict:
-
+def send_it(blockchain: str,function_args: list,function_name:str,contract_address:str,contract_abi:str,role:int,private_key:str,roles_mod_address:str) -> dict:
     cf = ContractFunction(blockchain, function_args, function_name, contract_address, contract_abi)
     roles_mod = RolesMod(blockchain, role, private_key, roles_mod_address)
-    roles_mod_execute = roles_mod.roles_transaction(cf)
+    roles_mod_execute = roles_mod.roles_transaction(cf.contract_address, cf.data_input())
     print('building receipt....')
     roles_mod_tx1 = roles_mod.get_tx_receipt(roles_mod_execute)
     print(roles_mod_tx1.status)

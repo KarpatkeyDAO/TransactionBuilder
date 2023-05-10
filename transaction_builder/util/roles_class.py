@@ -69,17 +69,18 @@ class RolesMod:
                 return int(x["gas_limit"]) + 100000
         return 500000
 
-    def check_roles_transaction(self, cf: ContractFunction):
+    def check_roles_transaction(self, contract_address: str, data_input: str):
         """make static call to validate transaction
 
         Args:
-            cf (ContractFunction): The contract function to execute
+            contract_address (str): The contract function address to execute.
+            data_input (str): data input string containing the encoded arguments.
         """
         try:
             self.contract_instance.functions.execTransactionWithRole(
-                cf.contract_address,
+                contract_address,
                 self.value,
-                cf.data_input(),
+                data_input,
                 self.operation,
                 self.role,
                 self.should_revert,
@@ -90,7 +91,8 @@ class RolesMod:
 
     def roles_transaction(
         self,
-        cf: ContractFunction,
+        contract_address: str,
+        data_input: str,
         max_prio: int = None,
         max_gas: int = None,
         gas_limit: int = None,
@@ -98,7 +100,8 @@ class RolesMod:
         """Execute a role-based transaction.
 
         Args:
-            cf (ContractFunction): The contract function to execute.
+            contract_address (str): The contract function address to execute.
+            data_input (str): data input string containing the encoded arguments.
             max_prio (int, optional): The maximum priority fee.
             max_gas (int, optional): The maximum gas fee.
             gas_limit (int, optional): The gas limit.
@@ -113,15 +116,15 @@ class RolesMod:
             max_gas = max_prio + self.get_base_fee()
 
         if not gas_limit:
-            gas_limit = self.get_gas_limit(cf.data_input()[:10])
+            gas_limit = self.get_gas_limit(data_input[:10])
 
         if not self.check_roles_transaction(cf):
             print("transaction will be reverted")
 
         tx = self.contract_instance.functions.execTransactionWithRole(
-            cf.contract_address,
+            contract_address,
             self.value,
-            cf.data_input(),
+            data_input,
             self.operation,
             self.role,
             self.should_revert,
