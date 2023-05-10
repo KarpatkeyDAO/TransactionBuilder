@@ -14,6 +14,7 @@ class ETHAddr:
     stkAAVE = "0x4da27a545c0c5B758a6BA100e3a049001de870f5"
     stkABPT = "0xa1116930326D21fB917d5A27F1E9943A9595fb47"
 
+Address = str
 
 Avatar = object()
 
@@ -67,7 +68,7 @@ class Approve(Method):
 class ApproveForAaveLendingPoolV2(Approve):
     fixed_arguments = {"spender": ETHAddr.AaveLendingPoolV2}
 
-    def __init__(self, token: str, amount: int):
+    def __init__(self, token: Address, amount: int):
         super().__init__(amount)
         self.token = token
 
@@ -89,7 +90,7 @@ class DeposiToken(Method):
     fixed_arguments = {"onBehalfOf": Avatar, "referralCode": 0}
     target_address = ETHAddr.AaveLendingPoolV2
 
-    def __init__(self, asset: str, amount: int, avatar: str):
+    def __init__(self, asset: Address, amount: int, avatar: Address):
         self.asset = asset
         self.amount = amount
         self.avatar = avatar
@@ -100,29 +101,38 @@ class DepositETH(Method):
     fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "onBehalfOf": Avatar, "referralCode": 0}
     target_address = ETHAddr.WrappedTokenGatewayV2
 
-    def __init__(self, eth_amount: int, avatar: str):
+    def __init__(self, eth_amount: int, avatar: Address):
         self.eth_amount = eth_amount
         self.avatar = avatar
 
-class Withdraw:
+class WithdrawToken(Method):
     name = "withdraw"
     signature = [("asset", "address"), ("amount", "uint256"), ("to", "address")]
     fixed_arguments = {"to": Avatar}
     target_address = ETHAddr.AaveLendingPoolV2
 
-class WithdrawETH:
+    def __init__(self, asset: Address, amount: int, avatar: Address):
+        self.asset = asset
+        self.amount = amount
+        self.avatar = avatar
+
+class WithdrawETH(Method):
     name = "withdrawETH"
     signature = [("address", "address"), ("amount", "uint256"), ("to", "address")]
     fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "to": Avatar}
     target_address = ETHAddr.WrappedTokenGatewayV2
 
-class Collateralize:
+    def __init__(self, amount: int, avatar: Address):
+        self.amount = amount
+        self.avatar = avatar
+
+class Collateralize(Method):
     name = "setUserUseReserveAsCollateral"
     signature = [("asset", "address"), ("useAsCollateral", "bool")]
     fixed_arguments = {}
     target_address = ETHAddr.AaveLendingPoolV2
 
-    def __init__(self, asset: str, use_as_collateral: bool):
+    def __init__(self, asset: Address, use_as_collateral: bool):
         self.asset = asset
         self.useAsCollateral = use_as_collateral
 
@@ -137,7 +147,7 @@ class Borrow(Method):
     fixed_arguments = {"referralCode": 0, "onBehalfOf": Avatar}
     target_address = ETHAddr.AaveLendingPoolV2
 
-    def __init__(self, asset: str, amount: int, interest_rate_model: InterestRateModel, avatar: str):
+    def __init__(self, asset: Address, amount: int, interest_rate_model: InterestRateModel, avatar: Address):
         self.asset = asset
         self.amount = amount
         self.avatar = avatar
@@ -163,11 +173,12 @@ class Stake(Method):
     fixed_arguments = {"onBehalfOf": Avatar}
     target_address = ETHAddr.stkAAVE
 
-    def __init__(self, amount: int, avatar: str):
+    def __init__(self, amount: int, avatar: Address):
         self.amount = amount
         self.avatar = avatar
 
-ACTION_DEPOSIT = [ApproveForAaveLendingPoolV2, DeposiToken, DepositETH, Withdraw, WithdrawETH, Collateralize]
+
+ACTION_DEPOSIT = [ApproveForAaveLendingPoolV2, DeposiToken, DepositETH, WithdrawToken, WithdrawETH, Collateralize]
 ACTION_BORROW = [ApproveForAaveLendingPoolV2, Borrow, BorrowETH, ] # TODO: repay, etc
 ACTION_STAKE = [] # TODO: ....
 
