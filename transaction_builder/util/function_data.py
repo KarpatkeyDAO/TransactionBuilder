@@ -16,6 +16,8 @@ class ContractFunction:
     function_name: str
     contract_address: str
     contract_abi: str
+    operation: Optional[int] = 0
+    value: Optional[int] = 0
     web3: Optional[Web3] = None
     contract_instance: Optional[Web3] = None
     function_instance: Optional[Web3] = None
@@ -38,6 +40,8 @@ class ContractFunction:
         """Create the data input for the contract function."""
         name = filter_by_name(self.function_name, json.loads(self.contract_abi))[0]
         types = get_abi_input_types(name)
-        signature = Web3.keccak(text=f"{self.function_name}({','.join(types)})").hex()[:10]
+        signature = (
+            Web3.keccak(text=f"{self.function_name}({','.join(types)})").hex()[:10]
+        )
         result = f"{signature}{encode(types, self.function_args).hex()}"
         return result
