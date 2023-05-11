@@ -1,8 +1,8 @@
 import functools
 import lru
 import logging
-from decimal import *
 
+from eth_abi import abi
 from web3 import Web3
 from web3.middleware import construct_simple_cache_middleware
 
@@ -134,3 +134,8 @@ def get_node(blockchain, block='latest', index=0):
     )
     web3.middleware_onion.add(simple_cache)
     return web3
+
+def to_data_input(name, arg_types, args):
+    encoded_signature = Web3.keccak(text=f"{name}({','.join(arg_types)})").hex()[:10]
+    encoded_args = abi.encode(arg_types, args).hex()
+    return f"{encoded_signature}{encoded_args}"

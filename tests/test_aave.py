@@ -1,9 +1,11 @@
 import pytest
 from transaction_builder.util.enums import Chain
 from transaction_builder.util.roles_class import RolesMod
+from transaction_builder.util.constants import ETHAddr
 
-from transaction_builder.protocols.aave import (ApproveForAaveLendingPoolV2, ApproveForStkAAVE, ETHAddr, DeposiToken, DepositETH, Borrow,
+from transaction_builder.protocols.aave import (ApproveForAaveLendingPoolV2, ApproveForStkAAVE, DeposiToken, DepositETH, Borrow,
                                                 InterestRateModel, BorrowETH, Stake)
+
 from eth_abi import abi
 
 BLOCKCHAIN = Chain.GNOSIS.value
@@ -16,9 +18,10 @@ def decode_data_input(arg_types, data_input):
 
 
 def test_approve_method():
-    method = ApproveForAaveLendingPoolV2(token=USDT_CONTRACT, amount=100000000)
-    assert method.get_args_list() == [ETHAddr.AaveLendingPoolV2, 100000000]
+    method = ApproveForAaveLendingPoolV2(token=USDT_CONTRACT, amount=123)
+    assert method.get_args_list() == [ETHAddr.AaveLendingPoolV2, 123]
     assert method.target_address == USDT_CONTRACT
+    assert method.as_data_input() == "0x095ea7b30000000000000000000000007d2768de32b0b80b7a3454c06bdac94a69ddc7a9000000000000000000000000000000000000000000000000000000000000007b"
 
     amount = 10000
     method = ApproveForStkAAVE(amount=amount)

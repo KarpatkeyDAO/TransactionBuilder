@@ -1,31 +1,17 @@
 from dataclasses import dataclass
 from enum import IntEnum
 
-from eth_abi import abi
-from web3 import Web3
+from transaction_builder.util.constants import ETHAddr
+from transaction_builder.util.functions import to_data_input
 
 
-class ETHAddr:
-    AaveLendingPoolV2 = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9"
-    ParaSwapRepayAdapter = "0x80Aca0C645fEdABaa20fd2Bf0Daf57885A309FE6"
-    WrappedTokenGatewayV2 = "0xEFFC18fC3b7eb8E676dac549E0c693ad50D1Ce31"
-    AAVE = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
-    ABPT = "0x41A08648C3766F9F9d85598fF102a08f4ef84F84"
-    stkAAVE = "0x4da27a545c0c5B758a6BA100e3a049001de870f5"
-    stkABPT = "0xa1116930326D21fB917d5A27F1E9943A9595fb47"
 
 Address = str
 
-Avatar = object()
+AvatarSafeAddress = object()
 
 class InvalidArgument(Exception):
     pass
-
-def to_data_input(name, signature, args):
-    arg_types = [arg_type for arg_name, arg_type in signature]
-    encoded_signature = Web3.keccak(text=f"{name}({','.join(arg_types)})").hex()[:10]
-    encoded_args = abi.encode(arg_types, args).hex()
-    return f"{encoded_signature}{encoded_args}"
 
 class Method:
     name = None
@@ -37,7 +23,7 @@ class Method:
         for arg_name, arg_type in self.signature:
             if arg_name in self.fixed_arguments:
                 value = self.fixed_arguments[arg_name]
-                if value is Avatar:
+                if value is AvatarSafeAddress:
                     value = self.avatar
             else:
                 value = getattr(self, arg_name)
@@ -45,7 +31,8 @@ class Method:
         return args_list
 
     def as_data_input(self):
-        return to_data_input(self.name, self.signature, self.get_args_list())
+        arg_types = [arg_type for arg_name, arg_type in self.signature]
+        return to_data_input(self.name, arg_types, self.get_args_list())
 
     @property
     def arg_types(self):
@@ -87,7 +74,7 @@ class ApproveForParaSwap(Approve):
 class DeposiToken(Method):
     name = "deposit"
     signature = [("asset", "address"), ("amount", "uint256"), ("onBehalfOf", "address"), ("referralCode", "uint16")]
-    fixed_arguments = {"onBehalfOf": Avatar, "referralCode": 0}
+    fixed_arguments = {"onBehalfOf": AvatarSafeAddress, "referralCode": 0}
     target_address = ETHAddr.AaveLendingPoolV2
 
     def __init__(self, asset: Address, amount: int, avatar: Address):
@@ -98,7 +85,7 @@ class DeposiToken(Method):
 class DepositETH(Method):
     name = "depositETH"
     signature = [("address", "address"), ("onBehalfOf", "address"), ("referralCode", "uint16")]
-    fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "onBehalfOf": Avatar, "referralCode": 0}
+    fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "onBehalfOf": AvatarSafeAddress, "referralCode": 0}
     target_address = ETHAddr.WrappedTokenGatewayV2
 
     def __init__(self, eth_amount: int, avatar: Address):
@@ -108,7 +95,7 @@ class DepositETH(Method):
 class WithdrawToken(Method):
     name = "withdraw"
     signature = [("asset", "address"), ("amount", "uint256"), ("to", "address")]
-    fixed_arguments = {"to": Avatar}
+    fixed_arguments = {"to": AvatarSafeAddress}
     target_address = ETHAddr.AaveLendingPoolV2
 
     def __init__(self, asset: Address, amount: int, avatar: Address):
@@ -119,7 +106,7 @@ class WithdrawToken(Method):
 class WithdrawETH(Method):
     name = "withdrawETH"
     signature = [("address", "address"), ("amount", "uint256"), ("to", "address")]
-    fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "to": Avatar}
+    fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "to": AvatarSafeAddress}
     target_address = ETHAddr.WrappedTokenGatewayV2
 
     def __init__(self, amount: int, avatar: Address):
@@ -144,7 +131,7 @@ class Borrow(Method):
     name = "borrow"
     signature = [("asset", "address"), ("amount", "uint256"), ("interestRateModel", "uint256"),
                  ("referralCode", "uint16"), ("onBehalfOf", "address")]
-    fixed_arguments = {"referralCode": 0, "onBehalfOf": Avatar}
+    fixed_arguments = {"referralCode": 0, "onBehalfOf": AvatarSafeAddress}
     target_address = ETHAddr.AaveLendingPoolV2
 
     def __init__(self, asset: Address, amount: int, interest_rate_model: InterestRateModel, avatar: Address):
@@ -170,7 +157,7 @@ class BorrowETH(Method):
 class Stake(Method):
     name = 'stake'
     signature = [("onBehalfOf", "address"), ("amount", "uint256")]
-    fixed_arguments = {"onBehalfOf": Avatar}
+    fixed_arguments = {"onBehalfOf": AvatarSafeAddress}
     target_address = ETHAddr.stkAAVE
 
     def __init__(self, amount: int, avatar: Address):
