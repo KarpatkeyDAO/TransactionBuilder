@@ -84,7 +84,7 @@ def multi_or_one(txs: List[Dict]) -> Tuple[int, str, str, str]:
         tx = make_onesend(txs[0])
         contract_address = tx.contract_address
         data = tx.data_input()
-        if tx['operation'] == 0:
+        if tx.operation == 0:
             operation = MultiSendOperation.CALL.value
         else:
             operation = MultiSendOperation.DELEGATE_CALL.value
