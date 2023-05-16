@@ -52,6 +52,7 @@ class Approve(Method):
         return self.token
 
 class ApproveForAaveLendingPoolV2(Approve):
+    """approve Token with AaveLendingPoolV2 as spender"""
     fixed_arguments = {"spender": ETHAddr.AaveLendingPoolV2}
 
     def __init__(self, token: Address, amount: int):
@@ -59,18 +60,22 @@ class ApproveForAaveLendingPoolV2(Approve):
         self.token = token
 
 class ApproveForStkAAVE(Approve):
+    """Approve AAVE with stkAAVE as spender"""
     fixed_arguments = {"spender": ETHAddr.stkAAVE}
     token = ETHAddr.AAVE
 
 
 class ApproveForStkABPT(Approve):
+    """Approve ABPT with stkABPT as spender"""
     fixed_arguments = {"spender": ETHAddr.stkABPT}
     token = ETHAddr.ABPT
 
 class ApproveForParaSwap(Approve):
+    """Approve Token with ParaSwapRepayAdapter as spender"""
     fixed_arguments = {"spender": ETHAddr.ParaSwapRepayAdapter}
 
 class DeposiToken(Method):
+    """Sender deposits Token and receives aToken in exchange"""
     name = "deposit"
     signature = [("asset", "address"), ("amount", "uint256"), ("onBehalfOf", "address"), ("referralCode", "uint16")]
     fixed_arguments = {"onBehalfOf": AvatarSafeAddress, "referralCode": 0}
@@ -82,6 +87,7 @@ class DeposiToken(Method):
         self.avatar = avatar
 
 class DepositETH(Method):
+    """Sender deposits ETH and receives aETH in exchange"""
     name = "depositETH"
     signature = [("address", "address"), ("onBehalfOf", "address"), ("referralCode", "uint16")]
     fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "onBehalfOf": AvatarSafeAddress, "referralCode": 0}
@@ -92,6 +98,7 @@ class DepositETH(Method):
         self.avatar = avatar
 
 class WithdrawToken(Method):
+    """Sender redeems aToken and withdraws Token"""
     name = "withdraw"
     signature = [("asset", "address"), ("amount", "uint256"), ("to", "address")]
     fixed_arguments = {"to": AvatarSafeAddress}
@@ -103,6 +110,7 @@ class WithdrawToken(Method):
         self.avatar = avatar
 
 class WithdrawETH(Method):
+    """Sender redeems aETH and withdraws ETH"""
     name = "withdrawETH"
     signature = [("address", "address"), ("amount", "uint256"), ("to", "address")]
     fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "to": AvatarSafeAddress}
@@ -113,6 +121,7 @@ class WithdrawETH(Method):
         self.avatar = avatar
 
 class Collateralize(Method):
+    """Set/unset asset as collateral"""
     name = "setUserUseReserveAsCollateral"
     signature = [("asset", "address"), ("useAsCollateral", "bool")]
     fixed_arguments = {}
@@ -127,6 +136,7 @@ class InterestRateModel(IntEnum):
     VARIABLE = 2
 
 class Borrow(Method):
+    """Borrow"""
     name = "borrow"
     signature = [("asset", "address"), ("amount", "uint256"), ("interestRateModel", "uint256"),
                  ("referralCode", "uint16"), ("onBehalfOf", "address")]
@@ -142,6 +152,7 @@ class Borrow(Method):
         self.interestRateModel = interest_rate_model
 
 class BorrowETH(Method):
+    """Borrow ETH"""
     name = "borrowETH"
     signature = [("address", "address"), ("amount", "uint256"), ("interestRateModel", "uint256"), ("referralCode", "uint16")]
     fixed_arguments = {"address": ETHAddr.AaveLendingPoolV2, "referralCode": 0}
@@ -162,7 +173,6 @@ class Stake(Method):
     def __init__(self, amount: int, avatar: Address):
         self.amount = amount
         self.avatar = avatar
-
 
 ACTION_DEPOSIT = [ApproveForAaveLendingPoolV2, DeposiToken, DepositETH, WithdrawToken, WithdrawETH, Collateralize]
 ACTION_BORROW = [ApproveForAaveLendingPoolV2, Borrow, BorrowETH, ] # TODO: repay, etc
@@ -390,6 +400,5 @@ ACTION_STAKE = [] # TODO: ....
         10. Claim/2: claimRewards from staking ABPT
 """
 
-#  Action is a set of methods that can be whitelisted altogether
 
 
