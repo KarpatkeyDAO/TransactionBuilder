@@ -6,7 +6,6 @@ import json
 from web3 import Web3, exceptions
 from eth_account import Account
 
-from .function_data import ContractFunction
 from .functions import get_node
 
 
@@ -20,18 +19,14 @@ class RolesMod:
     private_key: Optional[str] = None
     account: Optional[str] = None
     contract_abi: Optional[str] = (
-    '[{"type":"function","stateMutability":"nonpayable","outputs":[{"type":"bool",'
-    '"name":"success","internalType":"bool"}],"name":"execTransactionWithRole",'
-    '"inputs":[{"type":"address","name":"to","internalType":"address"},'
-    '{"type":"uint256","name":"value","internalType":"uint256"},'
-    '{"type":"bytes","name":"data","internalType":"bytes"},'
-    '{"type":"uint8","name":"operation","internalType":"enum Enum.Operation"},'
-    '{"type":"uint16","name":"role","internalType":"uint16"},'
-    '{"type":"bool","name":"shouldRevert","internalType":"bool"}]}]'
+    '[{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},'
+    '{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enum Enum.Operation","name":"operation","type":"uint8"},'
+    '{"internalType":"uint16","name":"role","type":"uint16"},{"internalType":"bool","name":"shouldRevert","type":"bool"}],"name":"execTransactionWithRole",'
+    '"outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'
     )
     operation: Optional[int] = 0
     value: Optional[int] = 0
-    should_revert: Optional[bool] = False
+    should_revert: Optional[bool] = True
     chain_id: Optional[int] = None
     nonce: Optional[int] = None
 
@@ -146,7 +141,6 @@ class RolesMod:
 
         signed_txn = self.web3.eth.account.sign_transaction(tx, self.private_key)
         executed_txn = self.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-
         return executed_txn.hex()
 
     def get_tx_receipt(self, tx_hash: str):
