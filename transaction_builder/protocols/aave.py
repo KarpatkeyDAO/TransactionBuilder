@@ -5,7 +5,6 @@ from transaction_builder.util.constants import ETHAddr
 from transaction_builder.util.functions import to_data_input
 
 
-
 Address = str
 
 AvatarSafeAddress = object()
@@ -30,7 +29,7 @@ class Method:
             args_list.append(value)
         return args_list
 
-    def as_data_input(self):
+    def as_data(self):
         arg_types = [arg_type for arg_name, arg_type in self.signature]
         return to_data_input(self.name, arg_types, self.get_args_list())
 
