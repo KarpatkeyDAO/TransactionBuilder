@@ -113,7 +113,3 @@ def get_node(blockchain, block='latest', index=0):
             web3 = get_web3_provider(node['archival'][index])
     return web3
 
-def to_data_input(name, arg_types, args):
-    encoded_signature = Web3.keccak(text=f"{name}({','.join(arg_types)})").hex()[:10]
-    encoded_args = abi.encode(arg_types, args).hex()
-    return f"{encoded_signature}{encoded_args}"
