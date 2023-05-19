@@ -1,11 +1,10 @@
 from typing import Optional, Union
 from dataclasses import dataclass
-from time import sleep
 import json
 
 from web3 import Web3
 from web3._utils.abi import get_abi_input_types, filter_by_name
-from eth_abi import encode_abi
+from eth_abi import encode
 
 from .functions import get_node
 
@@ -44,5 +43,5 @@ class ContractFunction:
         signature = (
             Web3.keccak(text=f"{self.function_name}({','.join(types)})").hex()[:10]
         )
-        result = f"{signature}{encode_abi(types, self.function_args).hex()}"
+        result = f"{signature}{encode(types, self.function_args).hex()}"
         return result

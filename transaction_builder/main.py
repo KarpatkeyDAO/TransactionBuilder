@@ -16,7 +16,6 @@ multisends = {
     'gnosisChain': '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761'
 }
 
-
 def make_onesend(tx: Dict) -> ContractFunction:
     """returns a ContractFunction class from transaction dict
 
