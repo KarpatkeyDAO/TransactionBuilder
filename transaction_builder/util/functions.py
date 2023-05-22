@@ -1,10 +1,6 @@
-import functools
-import lru
 import logging
-from decimal import *
 
 from web3 import Web3
-from web3.middleware import construct_simple_cache_middleware
 
 from .enums import Chain
 from .constants import NODE_ETH,NODE_POL,NODE_XDAI,NODE_FANTOM,NODE_OPTIMISM,NODE_BINANCE,NODE_AVALANCHE
@@ -36,13 +32,6 @@ def get_web3_provider(endpoint):
 
     web3 = Web3(provider)
 
-    # enable simple web3 cache, for example to cache eth_chainId calls
-    # more methods can be cached after analysing whether they are safe to cache
-    simple_cache = construct_simple_cache_middleware(
-        cache_class=functools.partial(lru.LRU, 4096),
-        rpc_whitelist={'eth_chainId'},
-    )
-
     class CallCounterMiddleware:
         call_count = 0
 
@@ -61,8 +50,6 @@ def get_web3_provider(endpoint):
             return response
 
     web3.middleware_onion.add(CallCounterMiddleware, 'call_counter')
-    # adding the cache after to get only effective calls counted by the counter
-    web3.middleware_onion.add(simple_cache, 'simple_cache')
     return web3
 
 def get_web3_call_count(web3):
@@ -124,13 +111,5 @@ def get_node(blockchain, block='latest', index=0):
             raise GetNodeIndexError
         else:
             web3 = get_web3_provider(node['archival'][index])
-
-
-    # enable simple web3 cache, for example to cache eth_chainId calls
-    # more methods can be cached after analysing whether they are safe to cache
-    simple_cache = construct_simple_cache_middleware(
-        cache_class=functools.partial(lru.LRU, 4096),
-        rpc_whitelist={'eth_chainId'},
-    )
-    web3.middleware_onion.add(simple_cache)
     return web3
+
