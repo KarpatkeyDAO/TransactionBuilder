@@ -7,7 +7,11 @@ import pytest
 from transaction_builder import main
 from transaction_builder.util.enums import Chain
 
-PRIVATE_KEY = "xxxx"
+
+if 'PRIVATE_KEY' in os.environ:
+    PRIVATE_KEY = os.environ['PRIVATE_KEY']
+else:
+    PRIVATE_KEY = "xxxx"
 BLOCKCHAIN = Chain.GNOSIS.value
 ROLE = 2
 ROLES_MOD_ADDRESS = "0xB6CeDb9603e7992A5d42ea2246B3ba0a21342503"
